@@ -1,8 +1,8 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:gallery_saver_plus/gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -11,47 +11,30 @@ class ImageGalleryView extends StatelessWidget {
   const ImageGalleryView({required this.images, super.key});
 
   Future<void> saveImageToGallery(String imageUrl) async {
-    try {
-      if (Platform.isAndroid) {
-        final status = await Permission.storage.request();
-        if (!status.isGranted) {
-          Fluttertoast.showToast(msg: "الصلاحية مرفوضة");
-          return;
-        }
-      }
-      final response = await Dio().get(
-        imageUrl,
-        options: Options(responseType: ResponseType.bytes),
-      );
+  try {
+    final response = await Dio().get(
+      imageUrl,
+      options: Options(responseType: ResponseType.bytes),
+    );
 
-      if (response.statusCode == 200) {
-        Directory? directory;
-        if (Platform.isAndroid) {
-          directory = Directory('/storage/emulated/0/Pictures/AinAlFhd');
-        } else {
-          directory = await getApplicationDocumentsDirectory();
-        }
+    if (response.statusCode == 200) {
+      final tempDir = await getTemporaryDirectory();
 
-        if (!await directory.exists()) {
-          await directory.create(recursive: true);
-        }
+      final filePath =
+          "${tempDir.path}/image_${DateTime.now().millisecondsSinceEpoch}.png";
 
-        String fileName =
-            "product_${DateTime.now().millisecondsSinceEpoch}.png";
-        File file = File("${directory.path}/$fileName");
-        await file.writeAsBytes(response.data);
+      final file = File(filePath);
+      await file.writeAsBytes(response.data);
 
-        Fluttertoast.showToast(
-          msg: "تم حفظ الصورة بنجاح",
-          toastLength: Toast.LENGTH_LONG,
-        );
-      } else {
-        Fluttertoast.showToast(msg: "فشل تحميل الصورة");
-      }
-    } catch (e) {
-      Fluttertoast.showToast(msg: "حدث خطأ: $e");
+      await GallerySaver.saveImage(file.path);
+      Fluttertoast.showToast(msg: "تم حفظ الصورة في المعرض", backgroundColor: Colors.green);
+      print("تم حفظ الصورة في المعرض");
     }
+  } catch (e) {
+    Fluttertoast.showToast(msg: "خطأ: $e", backgroundColor: Colors.red);  
+    print("خطأ: $e");
   }
+}
 
   @override
   Widget build(BuildContext context) {

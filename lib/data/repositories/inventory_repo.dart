@@ -9,7 +9,7 @@ class InventoryRepo {
     try {
       
       final response = await DioClient().dio.get(
-        '/Inventory/28',
+        '/Inventory/GetProcesedItems/28',
         options: Options(headers: {'Authorization': 'Bearer ${token}'}),
       );
 
