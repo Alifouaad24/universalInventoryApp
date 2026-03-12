@@ -2,6 +2,8 @@ class InventoryModel {
   final int inventoryId;
   final int? platformId;
   final int? sizeId;
+  final String? description;
+  final String? sitePrice;
   final int? itemId;
   final PlatformModel? platform;
   final SizeModel? size;
@@ -15,6 +17,8 @@ class InventoryModel {
     this.platform,
     this.size,
     this.item,
+    this.description,
+    this.sitePrice,
   });
 
   factory InventoryModel.fromJson(Map<String, dynamic> json) {
@@ -22,6 +26,8 @@ class InventoryModel {
       inventoryId: json['inventory_id'],
       platformId: json['platform_id'],
       sizeId: json['size_id'],
+      description: json['product_description'] ?? '',
+      sitePrice: json['sitePrice'] ?? '',
       itemId: json['itemId'],
       platform: json['platform'] != null
           ? PlatformModel.fromJson(json['platform'])

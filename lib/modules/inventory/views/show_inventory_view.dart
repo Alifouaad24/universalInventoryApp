@@ -47,12 +47,12 @@ class _ShowInventoryViewState extends State<ShowInventoryView> {
               return GestureDetector(
                 onTap: () {
                   final urls =
-                      item.item?.images?.map((e) => e.imageUrl).toList() ?? [];
+                      item.item?.images.map((e) => e.imageUrl).toList() ?? [];
                   if (urls.isNotEmpty) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => ImageGalleryView(images: urls),
+                        builder: (_) => ImageGalleryView(images: urls, title: item.description, price: item.sitePrice),
                       ),
                     );
                   }
@@ -110,7 +110,7 @@ class _ShowInventoryViewState extends State<ShowInventoryView> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'المنصة: ${item.platform?.description ?? "غير محدد"}',
+                                'الصور: ${item.item?.images.length ?? "غير محدد"}',
                                 style: const TextStyle(color: Colors.white70),
                               ),
                             ],
