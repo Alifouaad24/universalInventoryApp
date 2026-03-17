@@ -33,6 +33,23 @@ class _ShowInventoryViewState extends State<ShowInventoryView> {
             foregroundColor: Colors.white,
             centerTitle: true,
             backgroundColor: const Color.fromARGB(255, 241, 43, 195),
+            actions: [
+              controller.disinctSizes.isEmpty
+                  ? const SizedBox()
+                  : DropdownButton(
+                      value:"All",
+                      dropdownColor: const Color.fromARGB(255, 241, 43, 195),
+                      items: ["All", ...controller.disinctSizes].map((size) {
+                        return DropdownMenuItem(value: size, child: Text(size));
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          controller.filterBySize(value);
+                          print(value);
+                        }
+                      },
+                    ),
+            ],
           ),
           body: ListView.builder(
             padding: const EdgeInsets.all(12),
@@ -52,7 +69,11 @@ class _ShowInventoryViewState extends State<ShowInventoryView> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => ImageGalleryView(images: urls, title: item.description, price: item.sitePrice),
+                        builder: (_) => ImageGalleryView(
+                          images: urls,
+                          title: item.description,
+                          price: item.sitePrice,
+                        ),
                       ),
                     );
                   }

@@ -12,6 +12,8 @@ import 'package:path_provider/path_provider.dart';
 class InventoryController extends GetxController {
   InventoryRepo inventoryRepo = InventoryRepo();
   List<InventoryModel> inventory = [];
+  List<InventoryModel> constInventory = [];
+  List<String> disinctSizes = [];
   bool isloading = false;
   bool isSaveImagesLoading = false;
   @override
@@ -31,10 +33,29 @@ class InventoryController extends GetxController {
       },
       (data) {
         inventory = data;
+        constInventory = List.from(data);
+        disinctSizes = inventory
+            .map((e) => e.size?.description)
+            .where((description) => description != null)
+            .cast<String>()
+            .toSet()
+            .toList();
         isloading = false;
         update();
       },
     );
+  }
+
+  void filterBySize(String size) {
+    if (size == "All") {
+      inventory = List.from(constInventory);
+    } else {
+      inventory = constInventory
+          .where((item) => item.size?.description.trim() == size.trim())
+          .toList();
+    }
+
+    update();
   }
 
   Future<void> saveImageToGallery(String imageUrl) async {
