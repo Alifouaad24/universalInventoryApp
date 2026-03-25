@@ -70,6 +70,7 @@ class _ShowInventoryViewState extends State<ShowInventoryView> {
                       context,
                       MaterialPageRoute(
                         builder: (_) => ImageGalleryView(
+                          id: item.inventoryId,
                           images: urls,
                           title: item.description,
                           price: item.sitePrice,

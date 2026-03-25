@@ -7,7 +7,6 @@ import 'package:dio/dio.dart';
 class InventoryRepo {
   Future<Either<String, List<InventoryModel>>> fetchInventory() async {
     try {
-      
       final response = await DioClient().dio.get(
         '/Inventory/GetProcesedItems/28',
         options: Options(headers: {'Authorization': 'Bearer ${token}'}),
@@ -20,6 +19,24 @@ class InventoryRepo {
       return Right(inventory);
     } on DioException catch (e) {
       return Left('Failed to fetch inventory: ${e.toString()}');
+    }
+  }
+
+  Future<Either<String, InventoryModel>> editPrice(
+    int inventoryId,
+    String newPrice,
+    String title,
+  ) async {
+    try {
+      var response = await DioClient().dio.put(
+        '/Inventory/AddPriceTitleToInv/${inventoryId}',
+        data: {'price': newPrice, 'title': title},
+      );
+      var data = response.data;
+      var inventory = InventoryModel.fromJson(data);
+      return Right(inventory);
+    } on DioException catch (e) {
+      return Left('Failed to edit price: ${e.toString()}');
     }
   }
 }

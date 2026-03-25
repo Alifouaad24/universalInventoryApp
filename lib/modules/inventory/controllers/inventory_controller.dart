@@ -6,6 +6,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gallery_saver_plus/gallery_saver.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -90,5 +92,35 @@ class InventoryController extends GetxController {
       isSaveImagesLoading = false;
       update();
     }
+  }
+
+  void editPrice(int inventoryId, String newPrice, String title) async {
+    isloading = true;
+    update();
+    final result = await inventoryRepo.editPrice(inventoryId, newPrice, title);
+    result.fold(
+      (error) {
+        Fluttertoast.showToast(msg: error, backgroundColor: Colors.red);
+        isloading = false;
+        update();
+      },
+      (updatedInventory) {
+        int index = inventory.indexWhere(
+          (item) => item.inventoryId == inventoryId,
+        );
+        if (index != -1) {
+          inventory[index] = updatedInventory;
+          update();
+          Fluttertoast.showToast(
+            msg: "تم تحديث السعر بنجاح",
+            backgroundColor: Colors.green,
+          );
+        }
+        isloading = false;
+        update();
+        getInventory();
+        Get.back();
+      },
+    );
   }
 }
