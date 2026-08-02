@@ -55,9 +55,11 @@ class Business {
       isActive: json['is_active'],
       businessPhone: json['business_phone'],
       businessEmail: json['business_email'],
-      activities: (json['activities'] as List)
-          .map((e) => Activity.fromJson(e))
-          .toList(),
+      activities:json['activities'] != null
+          ? (json['activities'] as List)
+              .map((e) => Activity.fromJson(e))
+              .toList()
+          : [],
       businessTypes: (json['businessTypes'] as List)
           .map((e) => BusinessTypeLink.fromJson(e))
           .toList(),

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:ainalfhd_publisher/app/routes/app_routes.dart';
 import 'package:ainalfhd_publisher/app/services/local_storage.dart';
 import 'package:ainalfhd_publisher/data/models/user_responseModel.dart';
@@ -6,15 +8,12 @@ import 'package:ainalfhd_publisher/main.dart';
 import 'package:ainalfhd_publisher/modules/splash/controllers/splash_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/snackbar/snackbar.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 
 class AuthController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();
   final StorageLocalService _storageService = Get.find<StorageLocalService>();
   StorageLocalService storageService = Get.find<StorageLocalService>();
-final SplashController _splashController = Get.find<SplashController>();
+  final SplashController _splashController = Get.find<SplashController>();
   UserResponse? userResponse;
   final emailCtrl = TextEditingController();
   final passCtrl = TextEditingController();
@@ -42,13 +41,37 @@ final SplashController _splashController = Get.find<SplashController>();
       (user) async {
         loading = false;
         update();
-        _storageService.writeString('token', user.token);
+        await _storageService.writeString('token', user.token);
+        await decodeToken(user.token);
         Future.delayed(const Duration(milliseconds: 500), () {});
         token = user.token;
         await _splashController.initializeSettings();
         update();
       },
     );
+  }
+
+  Future<void> decodeToken(String token) async {
+    final parts = token.split('.');
+
+    if (parts.length != 3) {
+      throw Exception('Invalid token');
+    }
+
+    final payload = parts[1];
+    final normalizedPayload = base64Url.normalize(payload);
+    final decodedBytes = base64Url.decode(normalizedPayload);
+
+    final decodedString = utf8.decode(decodedBytes);
+
+    final Map<String, dynamic> data = jsonDecode(decodedString);
+
+    final rolesKey =
+        'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
+
+    final roles = data[rolesKey];
+
+    await _storageService.writeString('roles', jsonEncode(roles));
   }
 
   void logout() async {

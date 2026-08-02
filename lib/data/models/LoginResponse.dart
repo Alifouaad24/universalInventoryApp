@@ -1,17 +1,16 @@
-
 import 'package:ainalfhd_publisher/data/models/user_responseModel.dart';
 
 class LoginResponse {
   final String message;
   final AppUser user;
   final String token;
-  final List<Business> businesses;
+  //final List<Business> businesses;
 
   LoginResponse({
     required this.message,
     required this.user,
     required this.token,
-    required this.businesses,
+    //required this.businesses,
   });
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
@@ -19,9 +18,11 @@ class LoginResponse {
       message: json['message'],
       user: AppUser.fromJson(json['user']),
       token: json['token'],
-      businesses: (json['businesses'] as List)
-          .map((e) => Business.fromJson(e))
-          .toList(),
+      // businesses: json['businesses'] != null
+      //     ? (json['businesses'] as List)
+      //           .map((e) => Business.fromJson(e))
+      //           .toList()
+      //     : [],
     );
   }
 }
@@ -31,11 +32,7 @@ class AppUser {
   final String userName;
   final String email;
 
-  AppUser({
-    required this.id,
-    required this.userName,
-    required this.email,
-  });
+  AppUser({required this.id, required this.userName, required this.email});
 
   factory AppUser.fromJson(Map<String, dynamic> json) {
     return AppUser(

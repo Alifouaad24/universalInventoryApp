@@ -17,7 +17,9 @@ class SplashController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    initializeSettings();
+    Future.delayed(const Duration(seconds: 2), () {
+      initializeSettings();
+    });
   }
 
   void selectBusiness(Business business) {
@@ -41,36 +43,36 @@ class SplashController extends GetxController {
     );
   }
 
- Future<void> initializeSettings() async {
-  if (token == null) {
-    Future.microtask(() => Get.offAllNamed(AppRoutes.login));
-    return;
-  }
-
-  final result = await authRepository.GetMyData();
-
-  result.fold(
-    (error) {
+  Future<void> initializeSettings() async {
+    if (token == null) {
       Future.microtask(() => Get.offAllNamed(AppRoutes.login));
-    },
-    (data) {
-      userResponse = data;
-      selectedBusinessId = storageService.readInt('business_id');
+      return;
+    }
 
-      if (selectedBusinessId == null &&
-          userResponse != null &&
-          userResponse!.businesses.isNotEmpty) {
-        storageService.writeInt(
-          'business_id',
-          userResponse!.businesses.first.businessId,
-        );
-      }
+    final result = await authRepository.GetMyData();
 
-      update();
-      Future.microtask(() => Get.offAllNamed(AppRoutes.home));
-    },
-  );
-}
+    result.fold(
+      (error) {
+        Future.microtask(() => Get.offAllNamed(AppRoutes.login));
+      },
+      (data) {
+        userResponse = data;
+        selectedBusinessId = storageService.readInt('business_id');
+
+        if (selectedBusinessId == null &&
+            userResponse != null &&
+            userResponse!.businesses.isNotEmpty) {
+          storageService.writeInt(
+            'business_id',
+            userResponse!.businesses.first.businessId,
+          );
+        }
+
+        update();
+        Future.microtask(() => Get.offAllNamed(AppRoutes.home));
+      },
+    );
+  }
 
   @override
   void onClose() {
